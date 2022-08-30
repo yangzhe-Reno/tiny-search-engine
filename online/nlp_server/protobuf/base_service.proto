@@ -1,0 +1,56 @@
+syntax = "proto2";
+
+package NLP;
+
+option cc_generic_services = true;
+
+// 分词： request(string), response(list<string, TF>)
+
+message SegmentResult {
+    required string token = 1;
+    required int32 TF = 2;
+};
+
+message SegmentRequest {
+    required string sentence = 1;
+};
+
+message SegmentResponse {
+    repeated SegmentResult result = 1;
+};
+
+service SegmentService {
+    rpc cut(SegmentRequest) returns (SegmentResponse);
+};
+
+
+// 召回：request（List<string>） response(List<WordItem<word, DF, IndexItem<<DocId, TF, dl>, <DocId, TF, dl> ... >>>)
+
+message RecallRequest {
+    repeated string tokens = 1;
+};
+
+message RecallResponse {
+    repeated int32 DocIds = 1;
+};
+
+service RecallService {
+    rpc recall(RecallRequest) returns (RecallResponse);
+};
+
+// // 排序 request(List<string, df, qtf, List<IndexItem<DocId, dtf, len>>), response(List<DocId, Score>)
+
+
+message SortRequest {
+    repeated SegmentResult cut_result = 1;
+    repeated int32 DocIds = 2;
+};
+
+
+message SortResponse {
+    repeated int32 DocIds = 1;
+};
+
+service SortService {
+    rpc sort(SortRequest) returns (SortResponse);
+};
